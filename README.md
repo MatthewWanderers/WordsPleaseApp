@@ -1,255 +1,54 @@
 # Words Please!
-Words Please is a speech tool for autistic children ages 3-7 learning to use words and sentences. It will build strong communication skills between children and parents, aides, and teachers.
+[Words Please](https://wordsplease.github.io/words-please-tutorial/)
 
-Children will construct sentences using tiles with images and pictures on them, which will be read aloud at each new sentence. Some sentences, like
+Words Please is a sentence forming app that children with speech difficulties whose age ranges from 3 to 6 will be able to use on their iOS device in conjunction with their speech therapist or AIDE. Each phrase comes with text-to-audio to reinforce speech.
 
-It is built for the Ipad with React Native. We will be using a Rails back-end with PostgresQL.
+## Key Features
 
-## MVP Features
-   * Setting: Classroom
-   * Sentence Builder UI
-      * Word Tiles
-         * Tree-like structure
-         * 3 parts maximum
-         * Intuitive Picture Representation
-   * Sentence Display
-       * Active tiles
-       * Sentence In progress
-   * Button to reset
-      * tap to go back
-   * Pictures
-   * Tutorial
-   * seed data
-      * settings
-      * starters
-      * verbs/middles
-      * enders
-   * speech
-      * read sentence aloud every time tile is selected
-      * read sentence aloud on sentence tap/press
++ Forming sentences
+  + Sentences are divided into segments or phrases. When given a sentence starter, the appropriate text or phrase will be used to follow up, which the student can select and eventually form a completed sentence.
+![boardgif](https://res.cloudinary.com/dqj3kgpoj/image/upload/v1541535528/wordsplease.gif)
 
-## Wireframes
-![thankYouForWhoeverDidTheFormattingForMe](http://res.cloudinary.com/dqj3kgpoj/image/upload/v1524365654/wireframe.png)
++ Settings
+  + The child is able to use this app throughout their entire school period as there are two settings: classroom and playground. Each setting has a particular set of words attached to it; `on the swings` would be a word that a child would associate with during recess, so it's unavailable to be asked during the classroom setting. This is done by creating a joins table of the last card (titled finishers) and the setting.
+   ```js
+   class SettingMembership < ApplicationRecord
 
-## Functions:
+     validates :setting_id, :finisher_id, presence: true
 
-* Main Features:
-    * Cards to craft sentences and communicate
-    * Setting switching
-    * Connection with google translate audio (core to product but not necessarily to 1wk)
-    * Very good pictures for word association
+     belongs_to :setting,
+     foreign_key: :setting_id,
+     class_name: :Setting
 
-  * BONUS:
-    * (Parent)
-      * Local password (to allow for user context switching)
-      * Routine (child swipes as they complete steps)
-      * Timer (for adult to set and establish routine and time block)
-      * Adding local vocab/cards for parents
-      * Local storage for customized libraries
-      * Different age contexts/settings (upper age can include courtesy words)
-      * Spammed button -> Disable option for X seconds (prevent whining/spamming)
-* UX features (still core):
-    * Card/Word scrolling
-    * Backspace/Reset Button
+     belongs_to :finisher,
+     foreign_key: :finisher_id,
+     class_name: :Finisher
+   end
+   ```
 
-## Tech Stack
-* React Native
-* React/Redux
-* Ruby on Rails
-* Sqlite3
-* Node
-* Speech to text API
+  + Audio
+    + After forming a sentence, the child will be coached by their therapist or aide to finish the sentence. After tapping the sentence, an audio voice will voice the sentence for the student to repeat after. This is to reinforce speech.
 
-## Implementation Timeline
+  ```js
+  <TouchableOpacity
+    onPress={()=> {
+      Tts.speak(activeSet[0], { iosVoiceId: 'com.apple.ttsbundle.Samantha-compact' })
+    }}>
+    <Text>
+      {activeSet[0]}
+    </Text>
+  </TouchableOpacity>
+  <View style={{flex: 3, flexDirection: 'row', backgroundColor: '#3498DB'}}>
 
-### 4/21 - 4/22 Weekend
-* HELLO WORLD ON PHONES BY MONDAY
-* Proposal
-   * Wireframe
-   * React native components
-   * State Shape
-   * Schema
+    {activeSet[1]}
+  </View>
+  ```
 
-### 4/23 Monday(pair program)
-* Set up database/models/controllers
-* Minimal seeding
-* Build container & entry files, figure out if any additional bundler needed
-* settings component
-* Live wireframe tutorial (pics only of workflow)
+### Challenges
+One of the challenges was working together for the first time as this was the first time we all worked together in a group. We divided the project into several steps and components and made each person responsible for a specific portion. However, when there were disagreements, it would be difficult to communicate as an issue for one would cause an issue for another. We often came together to work out problems when an issue rose.
 
-### 4/24 Tuesday(pair program)
-* Build starter
-   * component
-   * action
-   * reducer
-   * api util
-   * view/json
-   * style/stylesheet
-
-### 4/25 Wednesday(split up parts)
-* Add error handling(reducer?)
-* build out other components, actions etc.
-
-### 4/25 Thursday
-* manage assets and local storage
-* implement speech capabilities
-
-### 4/26 Friday
-* manage styling & stylesheets
-* continue Thursday’s work
-* build out tutorial page
-
-### 4/27 Saturday
-* build tutorial page
-
-### 4/28 Sunday
-
-
-Challenges
-How to organize data structures to relate to each other yet be easy to create
-
-Text specs
-Words need boolean marking if end of thought so frontend knows to render restart button
-
-
-Sample State:
-```
-
-{
-	Entities: {
-	   ActiveTiles: {
-        0: Starter: {
-          id: 1,
-          title: ‘’,
-          imgUrl: ‘oajsdi’
-        }
-			1: Middle: 1,
-    },
-    Tiles: {
-    	[
-    		{Tile_id_0 :{
-    			Id: 0,
-    			image url:sdfsd,
-    			Title: “I want”,
-    			Is_end : false},
-    	 {
-        Tile_id_3 :{
-    			id : 3,
-    			Image url:skopfk,
-    			Title: ‘I feel”,
-    			Is_end : false
-        }
-      ]
-    },
-}
-	Setting: {
-		1: {
-		Setting_id: 1,
-		ImagePath: ./documents?
-		}
-},
-},
-	Errors: {},
-	Parent-Mode: {Off},
-	Connectivity: Offline (Figure out later-- depends on what to do for speech-to-text)
-}
-```
-Schema:
-`settings`
-
-| column name   |data type      | details |
-| ------------- |:-------------:| -----:  |
-| `id`            |  integer      | not null, primary key |
-| `title`            |  string      | not null |
-| `image_path`      |  string      | not null |
-
-
-`starters`
-
-| column name   |data type      | details |
-| ------------- |:-------------:| -----:  |
-| `id`            |  integer      | not null, primary key |
-| `title`           |  string      | not null |
-| `isLast`        | boolean    | not null |
-| `img_path`  | string | not null, foreign key |
-
-
-
-`middles`
-
-| column name   |data type      | details |
-| ------------- |:-------------:| -----:  |
-| `id`            |  integer      | not null, primary key |
-| `title`           |  string      | not null |
-| `isLast`        | boolean    | not null |
-| `img_path`  | string | not null |
-| `start_id` | integer | not null, foreign key |
-
-`finishers`
-
-| column name   |data type      | details |
-| ------------- |:-------------:| -----:  |
-| `id`            |  integer      | not null, primary key |
-| `title`           |  string      | not null |
-| `isLast`        | boolean    | not null |
-| `img_path`  | string | not null |
-| `middle_id` | integer | not null, foreign key |
-
-`setting_memberships`
-
-| column name   |data type      | details |
-| ------------- |:-------------:| -----:  |
-| `id`            |  integer      | not null, primary key |
-| `finisher_id` | integer | not null, foreign key |
-| `setting_id` | integer | not null, foreign key |
-
-
-Rolling list of questions:
-
-iOS native speech to text library/tool for apps
-Offline alternative for speech
-Confirming offline storage/cache for app
-Emulating/testing app
-
-
-Resources:
-
-
-Working notes of things to build:
-Tables/Models/controllers
-Seed data
-Views for json objects - Do we send to backend on web or local on phone?
----
-Entry file
-* how does it compile?
-* Other files needed?
-Components/Containers
-   * Container: main page
-   * setting component
-   * sentence display
-      * still displays selected tiles (even if previous fragment no longer shows in index items)
-   * tile display grid/array
-   * tile items
-Actions and api calls
-### Setting
-* get setting
-### Starter(s)
-* get all starters
-* get active starter
-### Middle
-* get all middles
-* get active middle
-### End
-* get all ends
-* get active end
-### Sentence display
-* get speech
-* delete starter (within sentence)
-* delete middle (within sentence)
-* delete end (within sentence)
-
-Reducers
-React native stylesheets
-
-Assets! Pictures and Imaging
-Tutorial
+## Future Direction/Features
+Future updates will include:
++ CSS fixes
++ Create feature so users can add their own card
++ Scroll function
